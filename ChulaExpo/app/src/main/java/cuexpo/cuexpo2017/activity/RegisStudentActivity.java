@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.inthecheesefactory.thecheeselibrary.manager.Contextor;
@@ -62,7 +63,7 @@ public class RegisStudentActivity extends AppCompatActivity implements View.OnCl
         //editor.putString("academicYear",etYear.getText().toString());
         editor.putString("academicSchool",etSchool.getText().toString());
         editor.putString("profile","http://graph.facebook.com/"+id+"/picture?type=large");
-        editor.commit();
+        editor.apply();
 
         etRegisName.setText(name);
         etEmail.setText(email);
@@ -136,9 +137,14 @@ public class RegisStudentActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void onClick(View v) {
         if(v == btnNext){
-//            Intent intent = new Intent(this, InterestActivity.class);
-            Intent intent = new Intent(this, InterestActivity.class);
-            startActivity(intent);
+            if(etRegisName.getText().toString().equals("")) {
+                Toast.makeText(getApplicationContext(), "กรุณาระบุชื่อผู้ใช้", Toast.LENGTH_SHORT).show();
+            } else if (etEmail.getText().toString().equals("")) {
+                Toast.makeText(getApplicationContext(), "กรุณาระบุอีเมล", Toast.LENGTH_SHORT).show();
+            } else {
+                Intent intent = new Intent(this, InterestActivity.class);
+                startActivity(intent);
+            }
         }
     }
 
@@ -158,12 +164,11 @@ public class RegisStudentActivity extends AppCompatActivity implements View.OnCl
             editor.putString("name", etRegisName.getText().toString());
             editor.putString("email", etEmail.getText().toString());
             try{
-            editor.putInt("age",Integer.parseInt(etBirth.getText().toString()));
+                editor.putInt("age",Integer.parseInt(etBirth.getText().toString()));
             } catch (NumberFormatException exception){
                 editor.putInt("age", 0);
             }
             editor.putString("academicSchool", etSchool.getText().toString());
-            //editor.putString("year", etYear.getText().toString());
             editor.commit();
         }
     };

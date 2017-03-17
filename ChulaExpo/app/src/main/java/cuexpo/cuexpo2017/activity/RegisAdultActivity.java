@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.inthecheesefactory.thecheeselibrary.manager.Contextor;
@@ -58,7 +59,7 @@ public class RegisAdultActivity extends AppCompatActivity implements View.OnClic
         //birthday = sharedPref.getString("birthday", "");
         editor.putString("type","Worker");
         editor.putString("profile","http://graph.facebook.com/"+id+"/picture?type=large");
-        editor.commit();
+        editor.apply();
 
         etRegisName.setText(name);
         etEmail.setText(email);
@@ -102,9 +103,14 @@ public class RegisAdultActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onClick(View v) {
         if(v == btnNext){
-//            Intent intent = new Intent(this, InterestActivity.class);
-            Intent intent = new Intent(this, InterestActivity.class);
-            startActivity(intent);
+            if(etRegisName.getText().toString().equals("")) {
+                Toast.makeText(getApplicationContext(), "กรุณาระบุชื่อผู้ใช้", Toast.LENGTH_SHORT).show();
+            } else if (etEmail.getText().toString().equals("")) {
+                Toast.makeText(getApplicationContext(), "กรุณาระบุอีเมล", Toast.LENGTH_SHORT).show();
+            } else {
+                Intent intent = new Intent(this, InterestActivity.class);
+                startActivity(intent);
+            }
         }
     }
 
