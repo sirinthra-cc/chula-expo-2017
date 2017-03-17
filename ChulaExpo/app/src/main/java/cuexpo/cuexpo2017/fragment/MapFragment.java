@@ -33,8 +33,10 @@ import android.widget.Toast;
 
 import com.example.indoorlocalization.Localization;
 import com.example.indoorlocalization.OnTaskCompleteListener;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -727,7 +729,9 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        MapsInitializer.initialize(getActivity().getApplicationContext());
         this.googleMap = googleMap;
+
         // Add Faculty
         for (IMapEntity facultyEntry : faculties.values()) {
             facultyEntry.setMap(googleMap);
@@ -767,9 +771,8 @@ public class MapFragment extends Fragment implements
             setPinOnClick(carParkPins, marker);
             setPinOnClick(emerPins, marker);
             setPinOnClick(prayerPins, marker);
-            setPinOnClick(popBusStationPins, marker);
             setPinOnClick(tempEventPin, marker);
-
+            setPinOnClick(popBusStationPins, marker);
             return true;
         }
     };
