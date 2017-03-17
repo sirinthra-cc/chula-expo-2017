@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/imageView2"
             android:layout_centerHorizontal="true"
-            android:text="Version 3.1.1"
+            android:text="Version 3.1.2"
             android:textColor="@color/white"
             android:textSize="20sp" />
 
