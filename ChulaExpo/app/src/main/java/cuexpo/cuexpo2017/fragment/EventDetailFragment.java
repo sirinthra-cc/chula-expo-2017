@@ -83,7 +83,7 @@ public class EventDetailFragment extends Fragment {
         Call<ActivityItemDao> call = HttpManager.getInstance().getService().loadActivityItem(id);
         call.enqueue(callbackActivity);
 
-        sendRequest(id, "android");
+        sendRequest("android", id);
 //        Call<RoundDao> roundCall = HttpManager.getInstance().getService().loadRoundsById(id);
 //        call.enqueue(callbackActivity);
 
