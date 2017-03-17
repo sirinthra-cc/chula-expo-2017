@@ -1,5 +1,6 @@
 package cuexpo.cuexpo2017.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import cuexpo.cuexpo2017.MainApplication;
 import cuexpo.cuexpo2017.R;
@@ -26,11 +28,13 @@ public class DoneRegisterActivity extends AppCompatActivity {
     String email, name, gender, profile, type, tags, academicLevel, academicYear, academicSchool, workerJob, facebook;
     int age;
     Token token;
+    Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_done_register);
+        activity = this;
 
         findViewById(R.id.btnNext).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,19 +85,21 @@ public class DoneRegisterActivity extends AppCompatActivity {
                         MainApplication.setApiToken(dao.getResults().getToken());
                         //Log.e("signup","apitoken: "+ dao.getResults().getToken());
                         editor.apply();
+                        Intent intent = new Intent(activity, MainActivity.class);
+                        startActivity(intent);
                     }
                 } else {
                     Log.e("signup","Signup Not Success");
+                    Toast.makeText(getApplicationContext(), "Cannot sign up: "+response.errorBody().toString(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<LoginDao> call, Throwable t) {
                 Log.d("signup","Signup Fail" + t.toString());
+                Toast.makeText(getApplicationContext(), "Cannot connect to server: "+t.toString(), Toast.LENGTH_SHORT).show();
             }
         });
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
     }
 
     @Override
