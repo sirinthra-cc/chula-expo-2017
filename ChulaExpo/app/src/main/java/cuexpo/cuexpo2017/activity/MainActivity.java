@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.crashlytics.android.Crashlytics;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
@@ -34,6 +35,7 @@ import cuexpo.cuexpo2017.fragment.ProfileFragment;
 import cuexpo.cuexpo2017.manager.HttpManager;
 import cuexpo.cuexpo2017.utility.IGoToMapable;
 import cuexpo.cuexpo2017.utility.NormalPinMapEntity;
+import io.fabric.sdk.android.Fabric;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -53,9 +55,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         super.onCreate(savedInstanceState);
         thisAcitivity = this;
-
         setContentView(R.layout.activity_main);
         rootView = thisAcitivity.findViewById(android.R.id.content);
+        Fabric.with(this, new Crashlytics());
 
         sharedPref = getSharedPreferences("FacebookInfo", MODE_PRIVATE);
         if (!sharedPref.getString("apiToken", "").equals(""))
@@ -243,5 +245,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         MapFragment mapFragment = (MapFragment) getSupportFragmentManager()
                 .findFragmentByTag("android:switcher:" + R.id.pager + ":" + 1);
         mapFragment.goToMap(entity);
+    }
+
+    public void forceCrash(View view) {
+        throw new RuntimeException("This is a crash");
     }
 }

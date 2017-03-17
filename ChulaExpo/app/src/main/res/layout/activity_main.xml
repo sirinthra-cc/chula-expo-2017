@@ -19,7 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="false"
-            android:layout_marginBottom="48dp"></cuexpo.cuexpo2017.utility.NonSwipeableViewPager>
+            android:layout_marginBottom="48dp">
+        </cuexpo.cuexpo2017.utility.NonSwipeableViewPager>
 
         <com.ogaclejapan.smarttablayout.SmartTabLayout
             android:id="@+id/viewpagertab"
@@ -48,14 +49,23 @@
             app:stl_overlineColor="@color/white"
             app:stl_overlineThickness="0.5dp"
             app:stl_underlineColor="#00ff4d7c"
-
             app:stl_underlineThickness="0dp" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:onClick="forceCrash"
+            android:text="Force Crash!" />
 
     </RelativeLayout>
 
     <FrameLayout
         android:id="@+id/main_overlay"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></FrameLayout>
+        android:layout_height="match_parent">
+    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>
