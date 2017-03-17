@@ -67,6 +67,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAY84UvXm-fLC6xkNN6tq9I30XAhKrQ124" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="3a5d8c8234883e0579fa9ec4ad318abf57abed99" />
 
         <receiver android:name=".utility.NotificationReceiver" />
     </application>
