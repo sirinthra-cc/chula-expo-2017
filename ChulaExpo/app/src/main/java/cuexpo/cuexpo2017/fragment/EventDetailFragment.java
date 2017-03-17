@@ -2,19 +2,24 @@ package cuexpo.cuexpo2017.fragment;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -31,6 +36,9 @@ import cuexpo.cuexpo2017.R;
 import cuexpo.cuexpo2017.adapter.EventDetailListAdapter;
 import cuexpo.cuexpo2017.dao.ActivityItemDao;
 import cuexpo.cuexpo2017.dao.ActivityItemResultDao;
+import cuexpo.cuexpo2017.dao.ArtGalMessage;
+import cuexpo.cuexpo2017.dao.ArtGalMessageDao;
+import cuexpo.cuexpo2017.dao.ArtGalMessageResult;
 import cuexpo.cuexpo2017.manager.HttpManager;
 import cuexpo.cuexpo2017.utility.DateUtil;
 import cuexpo.cuexpo2017.utility.Resource;
@@ -51,6 +59,7 @@ public class EventDetailFragment extends Fragment {
     private Fragment fragment;
     private ActivityItemResultDao dao;
     private String[] lightZone = {"SCI", "ECON", "LAW", "VET"};
+    private String id;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,15 +78,43 @@ public class EventDetailFragment extends Fragment {
         stickyViewSpacer = listHeader.findViewById(R.id.sticky_view_placeholder);
 
         SharedPreferences activitySharedPref = getActivity().getSharedPreferences("Event", Context.MODE_PRIVATE);
-        String id = activitySharedPref.getString("EventID", "");
+        id = activitySharedPref.getString("EventID", "");
 
         Call<ActivityItemDao> call = HttpManager.getInstance().getService().loadActivityItem(id);
         call.enqueue(callbackActivity);
+
+        sendRequest(id, "android");
 //        Call<RoundDao> roundCall = HttpManager.getInstance().getService().loadRoundsById(id);
 //        call.enqueue(callbackActivity);
 
         return rootView;
     }
+
+    private void sendRequest(String message, String activity){
+        Call<ArtGalMessageDao> call = HttpManager.getInstance().getService().sendArtGalMessage(new ArtGalMessage(message, activity));
+        call.enqueue(callbackMessage);
+    }
+
+    Callback<ArtGalMessageDao> callbackMessage = new Callback<ArtGalMessageDao>() {
+        @Override
+        public void onResponse(Call<ArtGalMessageDao> call, Response<ArtGalMessageDao> response) {
+            if (response.isSuccessful()) {
+                ArtGalMessageResult dao = response.body().getResults();
+                Log.d("artGal sent success", "|"+dao.getMessage()+"| "+dao.getId());
+            } else {
+                try {
+                    Log.e("fetch error", response.errorBody().string());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        @Override
+        public void onFailure(Call<ArtGalMessageDao> call, Throwable t) {
+            Log.e("artGal sent fail", t.toString());
+        }
+    };
 
     Callback<ActivityItemDao> callbackActivity = new Callback<ActivityItemDao>() {
         @Override
