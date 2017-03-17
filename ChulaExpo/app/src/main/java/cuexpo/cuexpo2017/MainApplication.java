@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.common.ConnectionResult;
@@ -21,6 +22,7 @@ import com.inthecheesefactory.thecheeselibrary.manager.Contextor;
 import java.util.Timer;
 
 import cuexpo.cuexpo2017.utility.LocationTask;
+import io.fabric.sdk.android.Fabric;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 
@@ -88,6 +90,9 @@ public class MainApplication extends Application implements
         // start background task
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new LocationTask(), 30000, 30000); // 30s
+
+        // Crashlytics
+        Fabric.with(this, new Crashlytics());
     }
 
     @Override

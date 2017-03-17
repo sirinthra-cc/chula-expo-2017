@@ -51,15 +51,6 @@
             app:stl_underlineColor="#00ff4d7c"
             app:stl_underlineThickness="0dp" />
 
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:onClick="forceCrash"
-            android:text="Force Crash!" />
-
     </RelativeLayout>
 
     <FrameLayout

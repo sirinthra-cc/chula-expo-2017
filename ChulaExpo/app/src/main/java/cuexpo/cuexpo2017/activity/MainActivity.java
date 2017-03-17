@@ -24,6 +24,7 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
+import cuexpo.cuexpo2017.MainApplication;
 import cuexpo.cuexpo2017.R;
 import cuexpo.cuexpo2017.dao.LoginDao;
 import cuexpo.cuexpo2017.dao.User;
@@ -57,14 +58,13 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         thisAcitivity = this;
         setContentView(R.layout.activity_main);
         rootView = thisAcitivity.findViewById(android.R.id.content);
-        Fabric.with(this, new Crashlytics());
 
         sharedPref = getSharedPreferences("FacebookInfo", MODE_PRIVATE);
-        if (!sharedPref.getString("apiToken", "").equals(""))
+        if (!sharedPref.getString("apiToken", "").equals("")) {
             HttpManager.getInstance().setAPIKey(sharedPref.getString("apiToken", ""));
+        }
 
         new AsyncTask<Void, Void, Void>() {
-
             @Override
             protected Void doInBackground(Void... params) {
                 initTab();
@@ -73,9 +73,13 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         }.execute();
     }
 
+    private void logUser() {
+        Crashlytics.setUserIdentifier(MainApplication.getApiToken());
+        Crashlytics.setUserEmail(sharedPref.getString("email", ""));
+        Crashlytics.setUserName(sharedPref.getString("name", "guest"));
+    }
+
     private void initTab() {
-
-
         viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
         final LayoutInflater inflater = LayoutInflater.from(viewPagerTab.getContext());
         final Context viewPagerContext = viewPagerTab.getContext();
@@ -127,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     private void getTabInfo() {
-
         if (!sharedPref.getString("apiToken", "").equals("")) {
             Call<UserDao> callUser = HttpManager.getInstance().getService().loadUserInfo();
             callUser.enqueue(new Callback<UserDao>() {
@@ -142,7 +145,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                             SharedPreferences sharedPref = getSharedPreferences("FacebookInfo", MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPref.edit();
                             editor.putString("uid", dao.getResults().getId());
-                            //Log.e("UserInfo","uid:"+dao.getResults().getId());
                             editor.putString("type", dao.getResults().getType());
                             editor.putString("profile", dao.getResults().getProfile());
                             editor.putString("gender", dao.getResults().getGender());
@@ -165,12 +167,14 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                                 editor.putString("workerJob", dao.getResults().getWorker().getJob());
                             }
                             editor.apply();
+
                         } else {
 
                         }
                     } else {
                         Log.e("UserInfo", "Load UserInfo Incomplete");
                     }
+
                 }
 
                 @Override
@@ -179,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 }
             });
         }
+        logUser();
     }
 
     @Override
@@ -247,7 +252,4 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         mapFragment.goToMap(entity);
     }
 
-    public void forceCrash(View view) {
-        throw new RuntimeException("This is a crash");
-    }
 }
