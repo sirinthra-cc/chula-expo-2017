@@ -137,13 +137,12 @@ public class LoginActivity extends AppCompatActivity {
     private FacebookCallback facebookCallback =  new FacebookCallback<LoginResult>() {
         @Override
         public void onSuccess(LoginResult loginResults) {
-            Log.e("LoginFB","facebook login yeah yeah yeah yeah yeah yeah");
             GraphRequest request = GraphRequest.newMeRequest(loginResults.getAccessToken(), graphJSONObjectCallback);
             token = loginResults.getAccessToken().getToken();
-            Log.e("LoginFB","Token Token Token Token Token Token Token Token Token Token");
+            Log.d("LoginFB fb success", token);
             SharedPreferences sharedPref = getSharedPreferences("FacebookInfo", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString("fbToken",token);
+            editor.putString("fbToken", token);
             editor.apply();
             Bundle parameters = new Bundle();
             parameters.putString("fields", "id,name,email,gender,birthday");
@@ -169,124 +168,111 @@ public class LoginActivity extends AppCompatActivity {
     private GraphRequest.GraphJSONObjectCallback graphJSONObjectCallback = new GraphRequest.GraphJSONObjectCallback() {
         @Override
         public void onCompleted(JSONObject object, GraphResponse response) {
+            SharedPreferences sharedPref = getSharedPreferences("FacebookInfo", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
             try {
-
-                Toast.makeText(Contextor.getInstance().getContext(), "กำลังเข้าสู่ระบบ...", Toast.LENGTH_SHORT).show();
-
+                Toast.makeText(Contextor.getInstance().getContext(), "กำลังเข้าสู่ระบบด้วย Facebook", Toast.LENGTH_SHORT).show();
                 Log.e("LoginFB","facebook login complete");
-                SharedPreferences sharedPref = getSharedPreferences("FacebookInfo", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                // "http://graph.facebook.com/"+id+"/picture?type=large";
+
                 editor.putString("id", object.getString("id"));
-                //Log.e("LoginFB","id: "+object.getString("id"));
                 editor.putString("name", object.getString("name"));
-                editor.putString("email", object.getString("email"));
-                //Log.e("LoginFB","birthday:"+object.getString("birthday"));
-                //editor.putString("birthday", object.getString("birthday"));
                 String gen = object.getString("gender");
                 if(gen.equals("male")) gen = "Male";
                 else gen = "Female";
                 editor.putString("gender", gen);
-                //Log.e("LoginFB","gender:"+object.getString("gender"));
-                editor.apply();
-
-                //api
-                Call<LoginDao> callLogin = HttpManager.getInstance().getService().accessFacebook(token);
-                /*
-                try {
-                    LoginDao loginDao = callLogin.execute().body();
-                    Log.e("LoginFB","Sync: "+ loginDao.getSuccess().toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                */
-
-                callLogin.enqueue(new Callback<LoginDao>() {
-                    @Override
-                    public void onResponse(Call<LoginDao> call, Response<LoginDao> response) {
-                        Log.e("LoginFB","facebook login onResponse");
-                        if(response.isSuccessful()) {
-                            LoginDao dao = response.body();
-                            if(dao.getSuccess()){
-                                Log.e("LoginFB","Success=true");
-
-                                //keep token
-                                SharedPreferences sharedPref = getSharedPreferences("FacebookInfo", MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPref.edit();
-                                editor.putString("apiToken",dao.getResults().getToken());
-                                MainApplication.setApiToken(dao.getResults().getToken());
-//                                Log.e("LoginFB","apiToken = " + dao.getResults().getToken());
-                                editor.apply();
-
-                                progress.setVisibility(View.VISIBLE);
-
-                                new AsyncTask<Void, Void, Void>() {
-
-                                    @Override
-                                    protected Void doInBackground(Void... params) {
-                                        try {
-                                            Thread.sleep(250);
-                                        } catch(Exception e) {}
-                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                        LoginActivity.this.startActivity(intent);
-                                        LoginActivity.this.finish();
-                                        return null;
-                                    }
-
-                                }.execute();
-
-                            } else {
-                                if(dao.getErrors().getCode() == 2){
-                                    Log.e("LoginFB","Account doesn't exist");
-                                    Intent intent = new Intent(LoginActivity.this, RoleActivity.class);
-                                    LoginActivity.this.startActivity(intent);
-                                    LoginActivity.this.finish();
-                                } else {
-                                    Toast.makeText(Contextor.getInstance().getContext(),dao.getErrors().getMessage().toString(),Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        } else {
-                            try {
-                                Log.e("LoginFB","facebook login not success " + response.errorBody().string());
-                                facebookLogin.setClickable(true);
-                                //Toast.makeText(Contextor.getInstance().getContext(),errorDao.getErrors().getMessage(),Toast.LENGTH_SHORT).show();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<LoginDao> call, Throwable t) {
-                        Log.e("LoginFB","facebook login Failure" + t.toString());
-                        facebookLogin.setClickable(true);
-                        Toast.makeText(Contextor.getInstance().getContext(),"No Connection",Toast.LENGTH_SHORT);
-                    }
-                });
-
-
-//                Intent intent = new Intent(LoginActivity.this, RoleActivity.class);
-//                LoginActivity.this.startActivity(intent);
-//                LoginActivity.this.finish();
+                editor.putString("email", object.getString("email"));
             } catch (JSONException error) {
                 Log.e("LoginFB","Parse JSON" + error.toString());
-                facebookLogin.setClickable(true);
+//                facebookLogin.setClickable(true);
+//                final AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+//                alert.setTitle("ขออภัย");
+//                alert.setMessage("กรุณายืนยันอีเมลในแอพ Facebook ของคุณก่อนลงทะเบียน");
+//                alert.setCancelable(false);
+//                alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//                AlertDialog alert2 = alert.create();
+//                alert2.show();
+                Toast.makeText(Contextor.getInstance().getContext(), "Logging in without email", Toast.LENGTH_SHORT).show();
             }
+            editor.apply();
+            sendAPILoginRequest();
         }
     };
+
+    private void sendAPILoginRequest(){
+        //api
+        Call<LoginDao> callLogin = HttpManager.getInstance().getService().accessFacebook(token);
+        callLogin.enqueue(new Callback<LoginDao>() {
+            @Override
+            public void onResponse(Call<LoginDao> call, Response<LoginDao> response) {
+                Log.e("LoginFB","facebook login onResponse");
+                if(response.isSuccessful()) {
+                    LoginDao dao = response.body();
+                    if(dao.getSuccess()){
+                        Log.e("LoginFB","Success=true");
+                        //keep token
+                        SharedPreferences sharedPref = getSharedPreferences("FacebookInfo", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putString("apiToken",dao.getResults().getToken());
+                        MainApplication.setApiToken(dao.getResults().getToken());
+                        editor.apply();
+
+                        progress.setVisibility(View.VISIBLE);
+                        new AsyncTask<Void, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Void... params) {
+                                try {
+                                    Thread.sleep(250);
+                                } catch(Exception e) {}
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                LoginActivity.this.startActivity(intent);
+                                LoginActivity.this.finish();
+                                return null;
+                            }
+                        }.execute();
+                    } else {
+                        if(dao.getErrors().getCode() == 2){
+                            Log.e("LoginFB","Account doesn't exist");
+                            Intent intent = new Intent(LoginActivity.this, RoleActivity.class);
+                            LoginActivity.this.startActivity(intent);
+                            LoginActivity.this.finish();
+                        } else {
+                            Toast.makeText(Contextor.getInstance().getContext(), dao.getErrors().getMessage(),Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } else {
+                    try {
+                        Log.e("LoginFB","facebook login not success " + response.errorBody().string());
+                        facebookLogin.setClickable(true);
+                        Toast.makeText(Contextor.getInstance().getContext(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginDao> call, Throwable t) {
+                Log.e("LoginFB","facebook login Failure" + t.toString());
+                facebookLogin.setClickable(true);
+                Toast.makeText(Contextor.getInstance().getContext(), "Cannot connect to server", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     private View.OnClickListener guestLoginOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
 
             new AsyncTask<Void, Void, Void>() {
-
                 @Override
                 protected void onPreExecute() {
                     container.setClickable(true);
                     progress.setVisibility(View.VISIBLE);
                 }
-
                 @Override
                 protected Void doInBackground(Void... params) {
                     try {
@@ -297,7 +283,6 @@ public class LoginActivity extends AppCompatActivity {
                     LoginActivity.this.finish();
                     return null;
                 }
-
             }.execute();
         }
     };

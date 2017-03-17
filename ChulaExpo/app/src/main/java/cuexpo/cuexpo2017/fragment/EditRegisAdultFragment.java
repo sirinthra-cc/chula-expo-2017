@@ -93,9 +93,6 @@ public class EditRegisAdultFragment extends Fragment implements TextWatcher {
         age = sharedPref.getInt("age",0);
         career = sharedPref.getString("workerJob","");
         Log.e("UserInfo","career:"+career);
-        //birthday = sharedPref.getString("birthday", "");
-        //editor.putString("type","Worker");
-        //editor.putString("profile","http://graph.facebook.com/"+id+"/picture?type=large");
 
         etRegisName.setText(name);
         etEmail.setText(email);
@@ -164,7 +161,6 @@ public class EditRegisAdultFragment extends Fragment implements TextWatcher {
             //Save to sharedPref
             editor.putString("name",etRegisName.getText().toString());
             Log.d("regis","Name: "+etRegisName.getText().toString());
-            editor.putString("email",etEmail.getText().toString());
             try {
                 editor.putInt("age", Integer.parseInt(etBirth.getText().toString()));
             } catch (NumberFormatException exception){
@@ -172,20 +168,25 @@ public class EditRegisAdultFragment extends Fragment implements TextWatcher {
             }
             editor.putString("gender",gender);
             editor.putString("workerJob",etCareer.getText().toString());
-            editor.commit();
 
-            //PUT API
-            EditAdultUser editAdultUser = new EditAdultUser(name,age,gender,"Worker",workerJob);
-            Call<UserDao> callUserInfo = HttpManager.getInstance().getService().editAdultUserInfo(editAdultUser);
-            callUserInfo.enqueue(callbackUserInfo);
+            String email = etEmail.getText().toString();
+            if(email.equals("")) Toast.makeText(getContext(), "กรุณาระบุอีเมล", Toast.LENGTH_SHORT).show();
+            else {
+                editor.putString("email", email);
+                editor.apply();
+                //PUT API
+                EditAdultUser editAdultUser = new EditAdultUser(name,age,gender,"Worker",workerJob);
+                Call<UserDao> callUserInfo = HttpManager.getInstance().getService().editAdultUserInfo(editAdultUser);
+                callUserInfo.enqueue(callbackUserInfo);
 
-            FragmentManager fragmentManager = getFragmentManager();
-            for(Fragment fragment : fragmentManager.getFragments()){
-                if(fragment instanceof ProfileFragment){
-                    ((ProfileFragment) fragment).updateProfile();
+                FragmentManager fragmentManager = getFragmentManager();
+                for(Fragment fragment : fragmentManager.getFragments()){
+                    if(fragment instanceof ProfileFragment){
+                        ((ProfileFragment) fragment).updateProfile();
+                    }
                 }
+                fragmentManager.popBackStack(null,FragmentManager.POP_BACK_STACK_INCLUSIVE);
             }
-            fragmentManager.popBackStack(null,FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
     };
 

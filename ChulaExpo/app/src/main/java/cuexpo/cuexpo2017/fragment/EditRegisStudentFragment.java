@@ -99,7 +99,6 @@ public class EditRegisStudentFragment extends Fragment implements TextWatcher {
         etSchool.setText(academicSchool);
 
         etRegisName.addTextChangedListener(this);
-        //etEmail.addTextChangedListener(this);
         etBirth.addTextChangedListener(this);
         etSchool.addTextChangedListener(this);
 
@@ -240,11 +239,6 @@ public class EditRegisStudentFragment extends Fragment implements TextWatcher {
                 age = 0;
             }
             academicSchool = etSchool.getText().toString();
-
-            //Save to sharedPref
-            editor.putString("name", etRegisName.getText().toString());
-            Log.d("regis", "Name: " + etRegisName.getText().toString());
-            editor.putString("email", etEmail.getText().toString());
             try {
                 editor.putInt("age", Integer.parseInt(etBirth.getText().toString()));
             } catch (NumberFormatException exception) {
@@ -254,21 +248,30 @@ public class EditRegisStudentFragment extends Fragment implements TextWatcher {
             editor.putString("academicSchool", etSchool.getText().toString());
             editor.putString("academicYear", academicYear);
             editor.putString("academicLevel", academicLevel);
-            editor.commit();
 
-            //PUT API
-            EditStudentUser editStudentUser = new EditStudentUser(name, age, gender,"Academic", academicLevel, academicYear, academicSchool);
-            Log.e("STUDENT","sendAcademic: "+academicSchool);
-            Call<UserDao> callUserInfo = HttpManager.getInstance().getService().editStudentUserInfo(editStudentUser);
-            callUserInfo.enqueue(callbackUserInfo);
+            //Save to sharedPref
+            editor.putString("name", etRegisName.getText().toString());
 
-            FragmentManager fragmentManager = getFragmentManager();
-            for (Fragment fragment : fragmentManager.getFragments()) {
-                if (fragment instanceof ProfileFragment) {
-                    ((ProfileFragment) fragment).updateProfile();
+            String email = etEmail.getText().toString();
+            if (email.equals("")) Toast.makeText(getContext(), "กรุณาระบุอีเมล", Toast.LENGTH_SHORT).show();
+            else {
+                editor.putString("email", email);
+                editor.apply();
+
+                //PUT API
+                EditStudentUser editStudentUser = new EditStudentUser(name, age, gender,"Academic", academicLevel, academicYear, academicSchool);
+                Log.e("STUDENT","sendAcademic: "+academicSchool);
+                Call<UserDao> callUserInfo = HttpManager.getInstance().getService().editStudentUserInfo(editStudentUser);
+                callUserInfo.enqueue(callbackUserInfo);
+
+                FragmentManager fragmentManager = getFragmentManager();
+                for (Fragment fragment : fragmentManager.getFragments()) {
+                    if (fragment instanceof ProfileFragment) {
+                        ((ProfileFragment) fragment).updateProfile();
+                    }
                 }
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             }
-            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
     };
 
