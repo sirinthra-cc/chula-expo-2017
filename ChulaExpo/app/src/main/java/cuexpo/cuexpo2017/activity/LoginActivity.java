@@ -20,6 +20,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -183,18 +185,8 @@ public class LoginActivity extends AppCompatActivity {
                 editor.putString("email", object.getString("email"));
             } catch (JSONException error) {
                 Log.e("LoginFB","Parse JSON" + error.toString());
-//                facebookLogin.setClickable(true);
-//                final AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-//                alert.setTitle("ขออภัย");
-//                alert.setMessage("กรุณายืนยันอีเมลในแอพ Facebook ของคุณก่อนลงทะเบียน");
-//                alert.setCancelable(false);
-//                alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        dialog.dismiss();
-//                    }
-//                });
-//                AlertDialog alert2 = alert.create();
-//                alert2.show();
+                Answers.getInstance().logCustom(new CustomEvent("Facebook Graph Request")
+                        .putCustomAttribute("Parse JSON Error", error.toString()));
                 Toast.makeText(Contextor.getInstance().getContext(), "Logging in without email", Toast.LENGTH_SHORT).show();
             }
             editor.apply();

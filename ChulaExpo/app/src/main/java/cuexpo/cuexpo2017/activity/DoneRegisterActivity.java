@@ -10,6 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
+
 import cuexpo.cuexpo2017.MainApplication;
 import cuexpo.cuexpo2017.R;
 import cuexpo.cuexpo2017.dao.LoginDao;
@@ -85,11 +88,15 @@ public class DoneRegisterActivity extends AppCompatActivity {
                         MainApplication.setApiToken(dao.getResults().getToken());
                         //Log.e("signup","apitoken: "+ dao.getResults().getToken());
                         editor.apply();
+                        Answers.getInstance().logCustom(new CustomEvent("Done Registration")
+                                .putCustomAttribute("Email",userProfile.getEmail()));
                         Intent intent = new Intent(activity, MainActivity.class);
                         startActivity(intent);
                     }
                 } else {
                     Log.e("signup","Signup Not Success");
+                    Answers.getInstance().logCustom(new CustomEvent("Done Registration")
+                            .putCustomAttribute("Email",userProfile.getEmail()));
                     Toast.makeText(getApplicationContext(), "Cannot sign up: "+response.errorBody().toString(), Toast.LENGTH_SHORT).show();
                 }
             }

@@ -19,6 +19,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
 import com.inthecheesefactory.thecheeselibrary.manager.Contextor;
 
 import java.io.IOException;
@@ -56,6 +58,8 @@ public class TagPageFragment extends Fragment {
 
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("TagDetail", Context.MODE_PRIVATE);
         String tag = sharedPreferences.getString("tagEnName", "");
+        Answers.getInstance().logCustom(new CustomEvent("View Tag Page")
+                    .putCustomAttribute("Tag",tag));
 
         Call<ActivityItemCollectionDao> call = HttpManager.getInstance().getService().loadActivityByTags(tag);
         call.enqueue(callbackActivity);
