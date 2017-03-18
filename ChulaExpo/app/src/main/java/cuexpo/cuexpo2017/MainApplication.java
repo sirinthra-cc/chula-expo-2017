@@ -127,7 +127,7 @@ public class MainApplication extends Application implements
     public static Location getCurrentLocation() {
         return lastKnownLocation;
     }
-
+    public static void setCurrentLocation(Location location) { lastKnownLocation = location; }
 
     @Override
     public void onLocationChanged(Location location) {

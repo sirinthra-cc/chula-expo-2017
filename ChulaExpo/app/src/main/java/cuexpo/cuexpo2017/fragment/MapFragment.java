@@ -621,14 +621,20 @@ public class MapFragment extends Fragment implements
         } else if (googleMap != null) {
             try {
                 googleMap.setMyLocationEnabled(true);
-                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-                Location location = MainApplication.getCurrentLocation();
-                if (location != null) {
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                            new LatLng(location.getLatitude(), location.getLongitude()),
-                            17
-                    ), 1000, null);
-                }
+//                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+//                Location location = googleMap.
+//                Location location = MainApplication.getCurrentLocation();
+                GoogleMap.OnMyLocationChangeListener myLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
+                    @Override
+                    public void onMyLocationChange (Location location) {
+                        MainApplication.setCurrentLocation(location);
+                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                                new LatLng(location.getLatitude(), location.getLongitude()),
+                                17
+                        ), 1000, null);
+                    }
+                };
+                googleMap.setOnMyLocationChangeListener(myLocationChangeListener);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
