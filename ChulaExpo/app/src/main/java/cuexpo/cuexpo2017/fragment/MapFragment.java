@@ -621,9 +621,6 @@ public class MapFragment extends Fragment implements
         } else if (googleMap != null) {
             try {
                 googleMap.setMyLocationEnabled(true);
-//                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-//                Location location = googleMap.
-//                Location location = MainApplication.getCurrentLocation();
                 GoogleMap.OnMyLocationChangeListener myLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
                     @Override
                     public void onMyLocationChange (Location location) {
